@@ -16,6 +16,8 @@
 		DF46204F269E78D100C7BD31 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = DF46204D269E78D100C7BD31 /* LaunchScreen.storyboard */; };
 		DF46205A269E78D200C7BD31 /* LookAtPointTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = DF462059269E78D200C7BD31 /* LookAtPointTests.swift */; };
 		DF462065269E78D200C7BD31 /* LookAtPointUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = DF462064269E78D200C7BD31 /* LookAtPointUITests.swift */; };
+		DF462073269E7B4D00C7BD31 /* TrackingManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = DF462072269E7B4D00C7BD31 /* TrackingManager.swift */; };
+		DF462075269E7D1600C7BD31 /* ARARSCNViewDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = DF462074269E7D1600C7BD31 /* ARARSCNViewDelegate.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -51,6 +53,8 @@
 		DF462060269E78D200C7BD31 /* LookAtPointUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = LookAtPointUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		DF462064269E78D200C7BD31 /* LookAtPointUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LookAtPointUITests.swift; sourceTree = "<group>"; };
 		DF462066269E78D200C7BD31 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		DF462072269E7B4D00C7BD31 /* TrackingManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TrackingManager.swift; sourceTree = "<group>"; };
+		DF462074269E7D1600C7BD31 /* ARARSCNViewDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ARARSCNViewDelegate.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -109,6 +113,8 @@
 				DF46204D269E78D100C7BD31 /* LaunchScreen.storyboard */,
 				DF462050269E78D100C7BD31 /* Info.plist */,
 				DF462048269E78CF00C7BD31 /* LookAtPoint.xcdatamodeld */,
+				DF462072269E7B4D00C7BD31 /* TrackingManager.swift */,
+				DF462074269E7D1600C7BD31 /* ARARSCNViewDelegate.swift */,
 			);
 			path = LookAtPoint;
 			sourceTree = "<group>";
@@ -263,8 +269,10 @@
 			files = (
 				DF46204A269E78CF00C7BD31 /* LookAtPoint.xcdatamodeld in Sources */,
 				DF462044269E78CF00C7BD31 /* ViewController.swift in Sources */,
+				DF462075269E7D1600C7BD31 /* ARARSCNViewDelegate.swift in Sources */,
 				DF462040269E78CF00C7BD31 /* AppDelegate.swift in Sources */,
 				DF462042269E78CF00C7BD31 /* SceneDelegate.swift in Sources */,
+				DF462073269E7B4D00C7BD31 /* TrackingManager.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
