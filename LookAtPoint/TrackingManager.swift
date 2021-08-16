@@ -20,6 +20,10 @@ class TrackingManager:NSObject {
     private var sceneView: ARSCNView!
 
     private let configuration = ARFaceTrackingConfiguration()
+    
+    //private let configuration = ARWorldTrackingConfiguration()
+    
+    private var isPhone : Bool?
 
     // 顔のNode
     private var faceNode = SCNNode()
@@ -41,6 +45,16 @@ class TrackingManager:NSObject {
 
     // 実際のiPhone12Proのポイント値でのスクリーンサイズ
     private let phoneScreenPointSize = CGSize(width: 390, height: 844)
+    
+    //実際のiPadPro12.9の物理的なスクリーンサイズ(m)
+    private let tabletScreenMeterSize = CGSize(width: 0.196535, height: 0.262174)
+    // 実際のiPadPro12.9のポイント値でのスクリーンサイズ
+    private let tabletScreenPointSize = CGSize(width: 2048, height: 2732)
+    
+//    private let tabletScreenMeterSize = CGSize(width: 0.262174, height: 0.196535 )
+//
+//    // 実際のiPadPro12.9のポイント値でのスクリーンサイズ
+//    private let tabletScreenPointSize = CGSize(width: 2732, height: 2048)
 
     // 仮想空間のiPhoneのNode
     private var virtualPhoneNode: SCNNode = SCNNode()
@@ -53,6 +67,13 @@ class TrackingManager:NSObject {
 
     init(with sceneView: ARSCNView, delegate: TrackingManagerDelegate) {
         super.init()
+        print("DEBAC[init]")
+        
+        if UIScreen.main.bounds.size.width == 390 {
+            isPhone = true
+        } else {
+            isPhone = false
+        }
 
         self.sceneView = sceneView
         self.delegate = delegate
@@ -75,7 +96,19 @@ class TrackingManager:NSObject {
 
     func runSession() {
         // sessionを開始
+//        if ARWorldTrackingConfiguration.isSupported {
+//                    configuration.isWorldTrackingEnabled = true
+//            } else {
+//
+//            }
+        print("DEBAC[runSession()]")
+            if ARFaceTrackingConfiguration.isSupported {
+                //configuration.userFaceTrackingEnabled = true
+            } else {
+        
+            }
         sceneView.session.run(configuration,options: [.resetTracking, .removeExistingAnchors])
+        print("qaaa",configuration)
     }
 
     func pauseSession() {
@@ -87,7 +120,7 @@ extension TrackingManager: ARSCNViewDelegate {
 
     // 新しい顔のNodeが追加されたら
     func renderer(_ renderer: SCNSceneRenderer, didAdd node: SCNNode, for anchor: ARAnchor) {
-
+        print("DEBAC[renderer]")
         // faceAnchorを取得
         faceNode.transform = node.transform
         guard let faceAnchor = anchor as? ARFaceAnchor else { return }
@@ -96,7 +129,7 @@ extension TrackingManager: ARSCNViewDelegate {
     }
     
     func update(withFaceAnchor anchor: ARFaceAnchor) {
-
+        print("DEBAC[update]")
         // 各eyeNodeのsimdTransfromにARFaceAnchorのeyeTransfromを代入
         rightEyeNode.simdTransform = anchor.rightEyeTransform
         leftEyeNode.simdTransform = anchor.leftEyeTransform
@@ -109,38 +142,53 @@ extension TrackingManager: ARSCNViewDelegate {
             // 仮想空間に配置したiPhoneNodeのHitTest
             // 目の中心と2m先に追加したTargetNodeの間で、virtualPhoneNodeとの交点を調べる
             let phoneScreenEyeRightHitTestResults = self.virtualPhoneNode.hitTestWithSegment(from: self.rightEyeTargetNode.worldPosition, to:
-            self.rightEyeNode.worldPosition, options: nil)
+                                                                                                self.rightEyeNode.worldPosition, options: nil)
+            print("olm",self.virtualPhoneNode.hitTestWithSegment(from: self.rightEyeTargetNode.worldPosition, to:
+                                                                    self.rightEyeNode.worldPosition, options: nil))
+            print("phoneScreenEyeRightHitTestResults", phoneScreenEyeRightHitTestResults,self.virtualPhoneNode,self.rightEyeTargetNode,self.rightEyeNode)
 
             let phoneScreenEyeLeftHitTestResults = self.virtualPhoneNode.hitTestWithSegment(from: self.leftEyeTargetNode.worldPosition, to:
             self.leftEyeNode.worldPosition, options: nil)
 
+            //HitTestがEmptyだった場合はパスする
+            if phoneScreenEyeRightHitTestResults.isEmpty == false || phoneScreenEyeLeftHitTestResults.isEmpty == false {
+                // HitTestの結果から各xとyを取得
+                for result in phoneScreenEyeRightHitTestResults {
+                    if self.isPhone == true {
+                        rightEyeLookingPoint.x = CGFloat(result.localCoordinates.x) / self.phoneScreenMeterSize.width * self.phoneScreenPointSize.width
+                        rightEyeLookingPoint.y = CGFloat(result.localCoordinates.y) / self.phoneScreenMeterSize.height * self.phoneScreenPointSize.height
+                    } else {
+                        rightEyeLookingPoint.x = CGFloat(result.localCoordinates.x) / self.tabletScreenMeterSize.width * self.tabletScreenPointSize.width
+                        rightEyeLookingPoint.y = CGFloat(result.localCoordinates.y) / self.tabletScreenMeterSize.height * self.tabletScreenPointSize.height
+                    }
+                }
 
-            // HitTestの結果から各xとyを取得
-            for result in phoneScreenEyeRightHitTestResults {
+                for result in phoneScreenEyeLeftHitTestResults {
+                    if self.isPhone == true {
+                        leftEyeLookingPoint.x = CGFloat(result.localCoordinates.x) / self.phoneScreenMeterSize.width * self.phoneScreenPointSize.width
+                        leftEyeLookingPoint.y = CGFloat(result.localCoordinates.y) / self.phoneScreenMeterSize.height * self.phoneScreenPointSize.height
+                    } else {
+                        leftEyeLookingPoint.x = CGFloat(result.localCoordinates.x) / self.tabletScreenMeterSize.width * self.tabletScreenPointSize.width
+                        leftEyeLookingPoint.y = CGFloat(result.localCoordinates.y) / self.tabletScreenMeterSize.height * self.tabletScreenPointSize.height
+                    }
+                }
 
-                rightEyeLookingPoint.x = CGFloat(result.localCoordinates.x) / self.phoneScreenMeterSize.width * self.phoneScreenPointSize.width
-                rightEyeLookingPoint.y = CGFloat(result.localCoordinates.y) / self.phoneScreenMeterSize.height * self.phoneScreenPointSize.height
+                // 最新の位置を追加し、直近の10通りの位置を配列で保持する
+                let suffixNumber: Int = 10
+                self.lookingPositionXs.append((rightEyeLookingPoint.x + leftEyeLookingPoint.x) / 2)
+                self.lookingPositionYs.append(-(rightEyeLookingPoint.y + leftEyeLookingPoint.y) / 2)
+                self.lookingPositionXs = Array(self.lookingPositionXs.suffix(suffixNumber))
+                self.lookingPositionYs = Array(self.lookingPositionYs.suffix(suffixNumber))
+                print("aveXs",self.lookingPositionXs,self.lookingPositionYs)
+
+                // 取得した配列の平均を出す
+                let avarageLookAtPositionX = self.lookingPositionXs.average
+                let avarageLookAtPositionY = self.lookingPositionYs.average
+                print("ave",avarageLookAtPositionX,avarageLookAtPositionY)
+
+                let lookingPoint = CGPoint(x: avarageLookAtPositionX, y: avarageLookAtPositionY)
+                self.delegate?.didUpdate(lookingPoint: lookingPoint)
             }
-
-            for result in phoneScreenEyeLeftHitTestResults {
-
-                leftEyeLookingPoint.x = CGFloat(result.localCoordinates.x) / self.phoneScreenMeterSize.width * self.phoneScreenPointSize.width
-                leftEyeLookingPoint.y = CGFloat(result.localCoordinates.y) / self.phoneScreenMeterSize.height * self.phoneScreenPointSize.height
-            }
-
-            // 最新の位置を追加し、直近の10通りの位置を配列で保持する
-            let suffixNumber: Int = 10
-            self.lookingPositionXs.append((rightEyeLookingPoint.x + leftEyeLookingPoint.x) / 2)
-            self.lookingPositionYs.append(-(rightEyeLookingPoint.y + leftEyeLookingPoint.y) / 2)
-            self.lookingPositionXs = Array(self.lookingPositionXs.suffix(suffixNumber))
-            self.lookingPositionYs = Array(self.lookingPositionYs.suffix(suffixNumber))
-
-            // 取得した配列の平均を出す
-            let avarageLookAtPositionX = self.lookingPositionXs.average
-            let avarageLookAtPositionY = self.lookingPositionYs.average
-
-            let lookingPoint = CGPoint(x: avarageLookAtPositionX, y: avarageLookAtPositionY)
-            self.delegate?.didUpdate(lookingPoint: lookingPoint)
         }
     }
 }

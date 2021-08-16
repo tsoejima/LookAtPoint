@@ -12,6 +12,7 @@ import SceneKit
 class ViewController: UIViewController {
 
     @IBOutlet weak var sceneView: ARSCNView!
+    @IBOutlet weak var pointerView: UILabel!
     
     private var trackingManager: TrackingManager!
     
@@ -37,6 +38,7 @@ class ViewController: UIViewController {
     @IBAction func lookAtPointLabelButton(_ sender: Any) {
         guard let lookAtPoint = lookAtPoint else { return }
         labelSetting(lookingPoint: lookAtPoint)
+        print("qaz",lookAtPoint)
     }
     
 }
@@ -45,6 +47,8 @@ extension ViewController: TrackingManagerDelegate {
     func didUpdate(lookingPoint: CGPoint) {
         print("dev",lookingPoint)
         lookAtPoint = lookingPoint
+        pointerView.transform = CGAffineTransform(translationX: lookingPoint.x, y: lookingPoint.y)
+        print("qaz","width",pointerView.frame.width,"height",pointerView.frame.height)
     }
 }
 
